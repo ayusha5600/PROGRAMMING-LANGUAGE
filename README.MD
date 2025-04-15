@@ -3,8 +3,6 @@ A Rust-based parser for basic SQL queries (SELECT, FROM, WHERE).
 # Description
  SQL parser implemented in Rust can parse SQL queries with the `SELECT`, `FROM`, and `WHERE` clauses, extracting column names, table names, and conditions. The parser currently supports simple equality (`=`) conditions in the `WHERE` clause.
 # Installation
- Clone the repository:
-   git clone https://github.com/ayusha5600/sql-parser.git
    cd sql-parser
 #  Install dependencies:
    cargo build
