@@ -1,39 +1,37 @@
-mod parser;
+mod token;         // Declare the token module
+mod tokenizer;     // Declare the tokenizer module
+mod pratt_parser;  // Declare the pratt_parser module
+mod sql_parser;    // Declare the sql_parser module
+
+use std::io::{self, Write}; // Import input/output and Write trait for flushing
+use tokenizer::tokenize;    // Import tokenize function
+use pratt_parser::parse_expression; // Import expression parser
+use sql_parser::parse_select;       // Import SQL SELECT parser
+
 fn main() {
-    let sql = "SELECT name, age FROM users WHERE age = 18";
+    println!("Welcome to the SQL Parser CLI!"); // Initial welcome message
 
-    match parser::parse_select(sql) {
-        Ok((remaining_input, _)) => {
-            println!("Matched keyword: 'SELECT'");
-            let remaining_input = remaining_input.trim();
+    loop {
+        print!("Statement: "); // Prompt for input
+        io::stdout().flush().unwrap();  // Force print to show immediately
 
-            match parser::parse_columns(remaining_input) {
-                Ok((remaining_input, columns)) => {
-                    println!("Columns: {:?}", columns);
-                    let remaining_input = remaining_input.trim();
+        let mut input = String::new(); // Create mutable input buffer
+        io::stdin().read_line(&mut input).unwrap(); // Read user input
+        let statement = input.trim(); // Trim whitespace and newlines
 
-                    match parser::parse_from(remaining_input) {
-                        Ok((remaining_input, table_name)) => {
-                            println!("Table: {}", table_name);
-                            let remaining_input = remaining_input.trim();
+        let tokens = tokenize(statement); // Tokenize the input string
+        println!("Tokens: {:?}", tokens); // Show tokens
 
-                            // Add this part to parse the WHERE clause
-                            match parser::parse_where(remaining_input) {
-                                Ok((remaining_input, (left, op, right))) => {
-                                    println!("Condition: {} {} {}", left, op, right);
-                                    println!("Remaining input: {}", remaining_input);
-                                }
-                                Err(_) => {
-                                    println!("No WHERE clause or failed to parse condition.");
-                                }
-                            }
-                        }
-                        Err(e) => println!("Error parsing FROM clause: {:?}", e),
-                    }
-                }
-                Err(e) => println!("Error parsing columns: {:?}", e),
-            }
+        // Try to parse as an arithmetic expression
+        match parse_expression(tokens.clone()) {
+            Ok(result) => println!("Parsed Expression: {:?}", result),
+            Err(err) => println!("Error: {}", err),
         }
-        Err(e) => println!("Error parsing SELECT: {:?}", e),
+
+        // Try to parse as a SQL SELECT statement
+        match parse_select(tokens) {
+            Ok(select_result) => println!("{}", select_result),
+            Err(err) => println!("Error: {}", err),
+        }
     }
 }
