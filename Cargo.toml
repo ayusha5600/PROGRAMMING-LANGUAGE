@@ -1,7 +1,8 @@
 [package]
-name = "programming_languages_project_  Aayusha_kattel"
+name = "programming_languages_project_Aayusha_kattel"
 version = "0.0.0"
 edition = "2021"
-authors = ["aayushakattel@sa.stud.vu.lt"]
+authors = ["aayusha.kattel@sa.stud.vu.lt"]
 
 [dependencies]
+nom = "7.1"
